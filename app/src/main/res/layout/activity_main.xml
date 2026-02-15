@@ -25,4 +25,48 @@
         android:layout_height="wrap_content"
         android:text="Salvar Salário" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Adicionar Gasto"
+        android:textSize="18sp"
+        android:layout_marginTop="24dp"/>
+
+    <EditText
+        android:id="@+id/editDescricao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Descrição do gasto" />
+
+    <EditText
+        android:id="@+id/editValorGasto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Valor do gasto"
+        android:inputType="numberDecimal" />
+
+    <Button
+        android:id="@+id/btnAdicionarGasto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Adicionar Gasto" />
+
+    <TextView
+        android:id="@+id/textTotalGasto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total gasto: R$ 0.0"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/textSaldoRestante"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Saldo restante: R$ 0.0"
+        android:textSize="16sp"/>
+
+
+
+
 </LinearLayout>

@@ -7,10 +7,12 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     SharedPreferences preferences;
+    double totalGasto = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,11 @@ public class MainActivity extends AppCompatActivity {
         // 2️⃣ Conecta os componentes da tela
         EditText editSalario = findViewById(R.id.editSalario);
         Button btnSalvar = findViewById(R.id.btnSalvar);
+        EditText editDescricao = findViewById(R.id.editDescricao);
+        EditText editValorGasto = findViewById(R.id.editValorGasto);
+        Button btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
+        TextView textTotalGasto = findViewById(R.id.textTotalGasto);
+        TextView textSaldoRestante = findViewById(R.id.textSaldoRestante);
 
         // 3️⃣ Recupera salário salvo
         float salarioSalvo = preferences.getFloat("salario", 0);
@@ -53,6 +60,34 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        // 4️⃣ Evento do botão Adicionar Gasto
+        btnAdicionarGasto.setOnClickListener(v -> {
+
+            String descricao = editDescricao.getText().toString();
+            String valorTexto = editValorGasto.getText().toString();
+
+            if (descricao.isEmpty() || valorTexto.isEmpty()) {
+                Toast.makeText(MainActivity.this,
+                        "Preencha todos os campos",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double valorGasto = Double.parseDouble(valorTexto);
+            totalGasto += valorGasto;
+
+            float salarioSalvoAtual = preferences.getFloat("salario", 0);
+            double saldo = salarioSalvoAtual - totalGasto;
+
+            textTotalGasto.setText("Total gasto: R$ " + totalGasto);
+            textSaldoRestante.setText("Saldo restante: R$ " + saldo);
+
+            editDescricao.setText("");
+            editValorGasto.setText("");
+
+        });
+
 
     }
 }
