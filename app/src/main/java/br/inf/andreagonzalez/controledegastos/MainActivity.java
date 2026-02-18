@@ -2,17 +2,39 @@ package br.inf.andreagonzalez.controledegastos;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
 public class MainActivity extends AppCompatActivity {
-    SharedPreferences preferences;
-    double totalGasto = 0;
+
+    // =========================
+    // ATRIBUTOS DA CLASSE
+    // =========================
+
+    private SharedPreferences preferences;
+
+    private double totalGasto = 0;
+
+    private ArrayList<Gasto> listaGastos = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private GastoAdapter adapter;
+
+    // =========================
+    // CICLO DE VIDA
+    // =========================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,74 +42,166 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // 1️⃣ Inicializa o SharedPreferences
+        inicializarPreferencias();
+        inicializarComponentes();
+        configurarRecyclerView();
+        recuperarSalarioSalvo();
+        configurarListeners();
+        recuperarListaGastos();
+    }
+
+    // =========================
+    // MÉTODOS DE INICIALIZAÇÃO
+    // =========================
+
+    private void inicializarPreferencias() {
         preferences = getSharedPreferences("dados", MODE_PRIVATE);
+    }
 
-        // 2️⃣ Conecta os componentes da tela
-        EditText editSalario = findViewById(R.id.editSalario);
-        Button btnSalvar = findViewById(R.id.btnSalvar);
-        EditText editDescricao = findViewById(R.id.editDescricao);
-        EditText editValorGasto = findViewById(R.id.editValorGasto);
-        Button btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
-        TextView textTotalGasto = findViewById(R.id.textTotalGasto);
-        TextView textSaldoRestante = findViewById(R.id.textSaldoRestante);
+    private EditText editSalario;
+    private EditText editDescricao;
+    private EditText editValorGasto;
+    private TextView textTotalGasto;
+    private TextView textSaldoRestante;
+    private Button btnSalvar;
+    private Button btnAdicionarGasto;
 
-        // 3️⃣ Recupera salário salvo
+    private void inicializarComponentes() {
+        editSalario = findViewById(R.id.editSalario);
+        editDescricao = findViewById(R.id.editDescricao);
+        editValorGasto = findViewById(R.id.editValorGasto);
+        textTotalGasto = findViewById(R.id.textTotalGasto);
+        textSaldoRestante = findViewById(R.id.textSaldoRestante);
+        btnSalvar = findViewById(R.id.btnSalvar);
+        btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
+        recyclerView = findViewById(R.id.recyclerGastos);
+    }
+
+    private void configurarRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new GastoAdapter(listaGastos);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void recuperarSalarioSalvo() {
         float salarioSalvo = preferences.getFloat("salario", 0);
 
         if (salarioSalvo != 0) {
             editSalario.setText(String.valueOf(salarioSalvo));
         }
+    }
 
-        // 4️⃣ Evento do botão
-        btnSalvar.setOnClickListener(v -> {
+    private void recuperarListaGastos() {
 
-            String salarioTexto = editSalario.getText().toString();
+        Gson gson = new Gson();
+        String json = preferences.getString("lista_gastos", null);
 
-            if (salarioTexto.isEmpty()) {
-                Toast.makeText(MainActivity.this,
-                        "Informe o salário",
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                double salario = Double.parseDouble(salarioTexto);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putFloat("salario", (float) salario);
-                editor.apply();
+        if (json != null) {
 
-                Toast.makeText(MainActivity.this,
-                        "Salário salvo com sucesso!!",
-                        Toast.LENGTH_LONG).show();
+            Type type = new TypeToken<ArrayList<Gasto>>() {}.getType();
+            listaGastos = gson.fromJson(json, type);
+
+            adapter = new GastoAdapter(listaGastos);
+            recyclerView.setAdapter(adapter);
+
+            // Atualiza total gasto
+            for (Gasto gasto : listaGastos) {
+                totalGasto += gasto.getValor();
             }
 
-        });
-
-        // 4️⃣ Evento do botão Adicionar Gasto
-        btnAdicionarGasto.setOnClickListener(v -> {
-
-            String descricao = editDescricao.getText().toString();
-            String valorTexto = editValorGasto.getText().toString();
-
-            if (descricao.isEmpty() || valorTexto.isEmpty()) {
-                Toast.makeText(MainActivity.this,
-                        "Preencha todos os campos",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            double valorGasto = Double.parseDouble(valorTexto);
-            totalGasto += valorGasto;
-
-            float salarioSalvoAtual = preferences.getFloat("salario", 0);
-            double saldo = salarioSalvoAtual - totalGasto;
+            float salarioSalvo = preferences.getFloat("salario", 0);
+            double saldo = salarioSalvo - totalGasto;
 
             textTotalGasto.setText("Total gasto: R$ " + totalGasto);
             textSaldoRestante.setText("Saldo restante: R$ " + saldo);
-
-            editDescricao.setText("");
-            editValorGasto.setText("");
-
-        });
-
-
+        }
     }
+
+
+    // =========================
+    // LISTENERS
+    // =========================
+
+    private void configurarListeners() {
+
+        // Botão salvar salário
+        btnSalvar.setOnClickListener(v -> salvarSalario());
+
+        // Botão adicionar gasto
+        btnAdicionarGasto.setOnClickListener(v -> adicionarGasto());
+    }
+
+    // =========================
+    // LÓGICA DE NEGÓCIO
+    // =========================
+
+    private void salvarSalario() {
+
+        String salarioTexto = editSalario.getText().toString();
+
+        if (salarioTexto.isEmpty()) {
+            Toast.makeText(this,
+                    "Informe o salário",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double salario = Double.parseDouble(salarioTexto);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat("salario", (float) salario);
+        editor.apply();
+
+        Toast.makeText(this,
+                "Salário salvo com sucesso!",
+                Toast.LENGTH_LONG).show();
+    }
+
+    private void adicionarGasto() {
+
+        String descricao = editDescricao.getText().toString();
+        String valorTexto = editValorGasto.getText().toString();
+
+        if (descricao.isEmpty() || valorTexto.isEmpty()) {
+            Toast.makeText(this,
+                    "Preencha todos os campos",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double valorGasto = Double.parseDouble(valorTexto);
+
+        // Cria objeto e adiciona à lista
+        Gasto novoGasto = new Gasto(descricao, valorGasto);
+        listaGastos.add(novoGasto);
+        adapter.notifyItemInserted(listaGastos.size() - 1);
+        salvarListaGastos();
+
+
+
+        // Atualiza total
+        totalGasto += valorGasto;
+
+        float salarioSalvo = preferences.getFloat("salario", 0);
+        double saldo = salarioSalvo - totalGasto;
+
+        textTotalGasto.setText("Total gasto: R$ " + totalGasto);
+        textSaldoRestante.setText("Saldo restante: R$ " + saldo);
+
+        // Limpa campos
+        editDescricao.setText("");
+        editValorGasto.setText("");
+    }
+
+
+    private void salvarListaGastos() {
+
+        Gson gson = new Gson();
+        String json = gson.toJson(listaGastos);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("lista_gastos", json);
+        editor.apply();
+    }
+
 }
