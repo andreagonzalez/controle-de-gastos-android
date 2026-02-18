@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
 public class MainActivity extends AppCompatActivity {
 
     // =========================
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         configurarRecyclerView();
         recuperarSalarioSalvo();
         configurarListeners();
+        recuperarListaGastos();
     }
 
     // =========================
@@ -85,6 +90,33 @@ public class MainActivity extends AppCompatActivity {
             editSalario.setText(String.valueOf(salarioSalvo));
         }
     }
+
+    private void recuperarListaGastos() {
+
+        Gson gson = new Gson();
+        String json = preferences.getString("lista_gastos", null);
+
+        if (json != null) {
+
+            Type type = new TypeToken<ArrayList<Gasto>>() {}.getType();
+            listaGastos = gson.fromJson(json, type);
+
+            adapter = new GastoAdapter(listaGastos);
+            recyclerView.setAdapter(adapter);
+
+            // Atualiza total gasto
+            for (Gasto gasto : listaGastos) {
+                totalGasto += gasto.getValor();
+            }
+
+            float salarioSalvo = preferences.getFloat("salario", 0);
+            double saldo = salarioSalvo - totalGasto;
+
+            textTotalGasto.setText("Total gasto: R$ " + totalGasto);
+            textSaldoRestante.setText("Saldo restante: R$ " + saldo);
+        }
+    }
+
 
     // =========================
     // LISTENERS
@@ -142,7 +174,10 @@ public class MainActivity extends AppCompatActivity {
         // Cria objeto e adiciona à lista
         Gasto novoGasto = new Gasto(descricao, valorGasto);
         listaGastos.add(novoGasto);
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemInserted(listaGastos.size() - 1);
+        salvarListaGastos();
+
+
 
         // Atualiza total
         totalGasto += valorGasto;
@@ -157,4 +192,16 @@ public class MainActivity extends AppCompatActivity {
         editDescricao.setText("");
         editValorGasto.setText("");
     }
+
+
+    private void salvarListaGastos() {
+
+        Gson gson = new Gson();
+        String json = gson.toJson(listaGastos);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("lista_gastos", json);
+        editor.apply();
+    }
+
 }
