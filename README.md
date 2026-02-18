@@ -51,6 +51,7 @@ O projeto não possui finalidade comercial e é mantido como parte do meu portf�
 
 ## 📂 Estrutura Simplificada
 
+```
 br.inf.andreagonzalez.controledegastos
 │
 ├── MainActivity.java
@@ -61,7 +62,7 @@ res/layout
 ├── activity_main.xml
 └── item_gasto.xml
 
-
+```
 ---
 
 ## 🎯 Objetivo de Aprendizado
