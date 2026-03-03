@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import androidx.appcompat.app.AlertDialog;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new GastoAdapter(listaGastos);
         recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemLongClickListener(position -> removerGasto(position));
+    }
+    private String formatarMoeda(double valor) {
+        NumberFormat formatoBrasil =
+                NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return formatoBrasil.format(valor);
     }
 
     private void recuperarSalarioSalvo() {
@@ -99,12 +109,12 @@ public class MainActivity extends AppCompatActivity {
         if (json != null) {
 
             Type type = new TypeToken<ArrayList<Gasto>>() {}.getType();
-            listaGastos = gson.fromJson(json, type);
+            listaGastos.clear();
+            listaGastos.addAll(gson.fromJson(json, type));
 
-            adapter = new GastoAdapter(listaGastos);
-            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
 
-            // Atualiza total gasto
+            totalGasto = 0;
             for (Gasto gasto : listaGastos) {
                 totalGasto += gasto.getValor();
             }
@@ -112,11 +122,58 @@ public class MainActivity extends AppCompatActivity {
             float salarioSalvo = preferences.getFloat("salario", 0);
             double saldo = salarioSalvo - totalGasto;
 
-            textTotalGasto.setText("Total gasto: R$ " + totalGasto);
-            textSaldoRestante.setText("Saldo restante: R$ " + saldo);
+            textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
+            textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
         }
     }
+    private void removerGasto(int position) {
 
+        Gasto gastoSelecionado = listaGastos.get(position);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Remover gasto")
+                .setMessage("Você está prestes a excluir:\n\n"
+                        + gastoSelecionado.getDescricao()
+                        + "\nValor: " + formatarMoeda(gastoSelecionado.getValor())
+                        + "\n\nDeseja continuar?")
+                .setPositiveButton("Remover", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+
+        dialog.setOnShowListener(d -> {
+
+            Button btnRemover = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button btnCancelar = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+            // Deixa botão remover vermelho
+            btnRemover.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+
+            btnRemover.setOnClickListener(v -> {
+
+                totalGasto -= gastoSelecionado.getValor();
+
+                listaGastos.remove(position);
+                adapter.notifyItemRemoved(position);
+
+                float salarioSalvo = preferences.getFloat("salario", 0);
+                double saldo = salarioSalvo - totalGasto;
+
+                textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
+                textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
+
+                salvarListaGastos();
+
+                Toast.makeText(this,
+                        "Gasto removido com sucesso",
+                        Toast.LENGTH_SHORT).show();
+
+                dialog.dismiss();
+            });
+        });
+
+        dialog.show();
+    }
 
     // =========================
     // LISTENERS
@@ -146,7 +203,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        double salario = Double.parseDouble(salarioTexto);
+        String valorLimpo = salarioTexto
+                .replace("R$", "")
+                .replace(".", "")
+                .replace(",", ".")
+                .trim();
+
+        double salario = Double.parseDouble(valorLimpo);
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("salario", (float) salario);
@@ -185,8 +248,8 @@ public class MainActivity extends AppCompatActivity {
         float salarioSalvo = preferences.getFloat("salario", 0);
         double saldo = salarioSalvo - totalGasto;
 
-        textTotalGasto.setText("Total gasto: R$ " + totalGasto);
-        textSaldoRestante.setText("Saldo restante: R$ " + saldo);
+        textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
+        textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
 
         // Limpa campos
         editDescricao.setText("");
