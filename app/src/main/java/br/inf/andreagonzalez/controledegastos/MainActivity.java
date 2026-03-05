@@ -93,6 +93,30 @@ public class MainActivity extends AppCompatActivity {
         return formatoBrasil.format(valor);
     }
 
+    private void atualizarSaldo(double saldo) {
+
+        textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
+
+        if (saldo < 0) {
+
+            textSaldoRestante.setTextColor(
+                    getResources().getColor(android.R.color.holo_red_dark)
+            );
+
+        } else if (saldo > 0) {
+
+            textSaldoRestante.setTextColor(
+                    getResources().getColor(android.R.color.holo_green_dark)
+            );
+
+        } else {
+
+            textSaldoRestante.setTextColor(
+                    getResources().getColor(android.R.color.darker_gray)
+            );
+        }
+    }
+
     private void recuperarSalarioSalvo() {
         float salarioSalvo = preferences.getFloat("salario", 0);
 
@@ -123,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
             double saldo = salarioSalvo - totalGasto;
 
             textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-            textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
+            atualizarSaldo(saldo);
         }
     }
     private void removerGasto(int position) {
@@ -160,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 double saldo = salarioSalvo - totalGasto;
 
                 textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-                textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
+                atualizarSaldo(saldo);
 
                 salvarListaGastos();
 
@@ -249,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
         double saldo = salarioSalvo - totalGasto;
 
         textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-        textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
+        atualizarSaldo(saldo);
 
         // Limpa campos
         editDescricao.setText("");
