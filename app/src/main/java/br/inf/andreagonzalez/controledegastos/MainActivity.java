@@ -1,5 +1,6 @@
 package br.inf.andreagonzalez.controledegastos;
 
+import androidx.core.content.ContextCompat;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
@@ -100,19 +101,19 @@ public class MainActivity extends AppCompatActivity {
         if (saldo < 0) {
 
             textSaldoRestante.setTextColor(
-                    getResources().getColor(android.R.color.holo_red_dark)
+                    ContextCompat.getColor(this, android.R.color.holo_red_dark)
             );
 
         } else if (saldo > 0) {
 
             textSaldoRestante.setTextColor(
-                    getResources().getColor(android.R.color.holo_green_dark)
+                    ContextCompat.getColor(this, android.R.color.holo_green_dark)
             );
 
         } else {
 
             textSaldoRestante.setTextColor(
-                    getResources().getColor(android.R.color.darker_gray)
+                    ContextCompat.getColor(this, android.R.color.darker_gray)
             );
         }
     }
@@ -171,7 +172,9 @@ public class MainActivity extends AppCompatActivity {
             Button btnCancelar = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
 
             // Deixa botão remover vermelho
-            btnRemover.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            btnRemover.setTextColor(
+                    ContextCompat.getColor(MainActivity.this, android.R.color.holo_red_dark)
+            );
 
             btnRemover.setOnClickListener(v -> {
 
