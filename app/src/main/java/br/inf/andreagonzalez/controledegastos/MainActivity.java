@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new GastoAdapter(listaGastos);
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnItemLongClickListener(position -> removerGasto(position));
+        adapter.setOnItemLongClickListener(position -> mostrarOpcoesGasto(position));
     }
     private String formatarMoeda(double valor) {
         NumberFormat formatoBrasil =
@@ -151,7 +151,40 @@ public class MainActivity extends AppCompatActivity {
             atualizarSaldo(saldo);
         }
     }
+    private void editarGasto(int position) {
+
+        Toast.makeText(this,
+                "Editar gasto em desenvolvimento",
+                Toast.LENGTH_SHORT).show();
+
+    }
     private void removerGasto(int position) {
+
+        Toast.makeText(this,
+                "Remover gasto em desenvolvimento",
+                Toast.LENGTH_SHORT).show();
+
+    }
+    private void mostrarOpcoesGasto(int position) {
+
+        String[] opcoes = {"Editar", "Excluir"};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Escolha uma ação")
+                .setItems(opcoes, (dialog, which) -> {
+
+                    if (which == 0) {
+                        editarGasto(position);
+                    }
+
+                    if (which == 1) {
+                        removerGasto(position);
+                    }
+
+                })
+                .show();
+    }
+    private void mostrarOpcoesgasto(int position) {
 
         Gasto gastoSelecionado = listaGastos.get(position);
 
