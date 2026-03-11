@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import androidx.appcompat.app.AlertDialog;
 import java.text.NumberFormat;
 import java.util.Locale;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -153,17 +154,55 @@ public class MainActivity extends AppCompatActivity {
     }
     private void editarGasto(int position) {
 
-        Toast.makeText(this,
-                "Editar gasto em desenvolvimento",
-                Toast.LENGTH_SHORT).show();
+        Gasto gastoSelecionado = listaGastos.get(position);
 
+        EditText editDescricaoDialog = new EditText(this);
+        EditText editValorDialog = new EditText(this);
+
+        editDescricaoDialog.setText(gastoSelecionado.getDescricao());
+        editValorDialog.setText(String.valueOf(gastoSelecionado.getValor()));
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        layout.addView(editDescricaoDialog);
+        layout.addView(editValorDialog);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Editar gasto")
+                .setView(layout)
+                .setPositiveButton("Salvar", (dialog, which) -> {
+
+                    String novaDescricao = editDescricaoDialog.getText().toString();
+                    double novoValor = Double.parseDouble(editValorDialog.getText().toString());
+
+                    totalGasto -= gastoSelecionado.getValor();
+
+                    gastoSelecionado.setDescricao(novaDescricao);
+                    gastoSelecionado.setValor(novoValor);
+
+                    totalGasto += novoValor;
+
+                    adapter.notifyItemChanged(position);
+
+                    float salarioSalvo = preferences.getFloat("salario", 0);
+                    double saldo = salarioSalvo - totalGasto;
+
+                    textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
+                    atualizarSaldo(saldo);
+
+                    salvarListaGastos();
+
+                    Toast.makeText(this,
+                            "Gasto atualizado",
+                            Toast.LENGTH_SHORT).show();
+                })
+
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
     private void removerGasto(int position) {
-
-        Toast.makeText(this,
-                "Remover gasto em desenvolvimento",
-                Toast.LENGTH_SHORT).show();
-
+        mostrarOpcoesgasto(position);
     }
     private void mostrarOpcoesGasto(int position) {
 
