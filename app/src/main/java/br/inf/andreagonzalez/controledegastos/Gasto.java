@@ -17,4 +17,13 @@ public class Gasto {
     public double getValor() {
         return valor;
     }
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setValor(double valor) {
+        this.valor = valor;
+    }
+
 }
+
