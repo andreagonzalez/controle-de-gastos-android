@@ -23,6 +23,8 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import android.widget.LinearLayout;
 
+import br.inf.andreagonzalez.controledegastos.model.Gasto;
+
 public class MainActivity extends AppCompatActivity {
 
     // =========================

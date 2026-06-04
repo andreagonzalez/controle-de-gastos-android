@@ -1,4 +1,4 @@
-package br.inf.andreagonzalez.controledegastos;
+package br.inf.andreagonzalez.controledegastos.model;
 
 public class Gasto {
 

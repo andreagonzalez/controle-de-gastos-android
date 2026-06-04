@@ -12,6 +12,8 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import br.inf.andreagonzalez.controledegastos.model.Gasto;
+
 public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHolder> {
 
     public interface OnItemLongClickListener {
