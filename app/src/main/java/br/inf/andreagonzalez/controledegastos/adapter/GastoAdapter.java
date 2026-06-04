@@ -1,4 +1,4 @@
-package br.inf.andreagonzalez.controledegastos;
+package br.inf.andreagonzalez.controledegastos.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +12,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 
 public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHolder> {
