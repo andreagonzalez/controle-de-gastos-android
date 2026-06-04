@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         double valorGasto = Double.parseDouble(valorTexto);
 
         // Cria objeto e adiciona à lista
-        Gasto novoGasto = new Gasto(descricao, valorGasto);
+        Gasto novoGasto = new Gasto(descricao, valorGasto, "Outros");
         listaGastos.add(novoGasto);
         adapter.notifyItemInserted(listaGastos.size() - 1);
         salvarListaGastos();
