@@ -38,3 +38,7 @@ local.properties
 
 # Captures (Android Studio profiling)
 captures/
+
+# VS Code
+.vscode/
+
