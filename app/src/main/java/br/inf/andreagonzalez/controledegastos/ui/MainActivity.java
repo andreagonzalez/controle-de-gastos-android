@@ -1,4 +1,4 @@
-package br.inf.andreagonzalez.controledegastos;
+package br.inf.andreagonzalez.controledegastos.ui;
 
 import androidx.core.content.ContextCompat;
 import android.content.SharedPreferences;
@@ -22,6 +22,10 @@ import androidx.appcompat.app.AlertDialog;
 import java.text.NumberFormat;
 import java.util.Locale;
 import android.widget.LinearLayout;
+
+import br.inf.andreagonzalez.controledegastos.R;
+import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
+import br.inf.andreagonzalez.controledegastos.model.Gasto;
 
 public class MainActivity extends AppCompatActivity {
 
