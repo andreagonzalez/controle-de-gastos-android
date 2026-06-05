@@ -5,11 +5,18 @@ public class Gasto {
     private String descricao;
     private double valor;
     private String categoria;
+    private String formaPagamento;
 
-    public Gasto(String descricao, double valor, String categoria) {
+
+    public Gasto(String descricao,
+                 double valor,
+                 String categoria,
+                 String formaPagamento
+    ) {
         this.descricao = descricao;
         this.valor = valor;
         this.categoria = categoria;
+        this.formaPagamento = formaPagamento;
     }
 
     public String getDescricao() {
@@ -23,6 +30,10 @@ public class Gasto {
     public String getCategoria() {
         return categoria;
     }
+    public String getFormaPagamento() {
+        return formaPagamento;
+    }
+
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
@@ -34,5 +45,8 @@ public class Gasto {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+    public void setFormaPagamento(String formaPagamento) {
+        this.formaPagamento = formaPagamento;
     }
 }

@@ -25,6 +25,13 @@
             android:layout_height="wrap_content"
             android:text="Categoria"
             android:textSize="12sp" />
+        
+        <TextView
+            android:id="@+id/textFormaPagamento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pagamento"
+            android:textSize="12sp" />
 
     </LinearLayout>
 

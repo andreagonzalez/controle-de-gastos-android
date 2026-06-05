@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         inicializarPreferencias();
         inicializarComponentes();
         configurarSpinnerCategorias();
+        configurarSpinnerFormaPagamento();
         configurarRecyclerView();
         recuperarSalarioSalvo();
         configurarListeners();
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnSalvar;
     private Button btnAdicionarGasto;
     private Spinner spinnerCategoria;
+    private Spinner spinnerFormaPagamento;
 
 
     private void inicializarComponentes() {
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
         spinnerCategoria = findViewById(R.id.spinnerCategoria);
         recyclerView = findViewById(R.id.recyclerGastos);
+        spinnerFormaPagamento = findViewById(R.id.spinnerFormaPagamento);
 
     }
     private void configurarSpinnerCategorias() {
@@ -116,6 +119,28 @@ public class MainActivity extends AppCompatActivity {
         );
 
         spinnerCategoria.setAdapter(adapterCategorias);
+    }
+    private void configurarSpinnerFormaPagamento() {
+
+        String[] formasPagamento = {
+                "Pix",
+                "Dinheiro",
+                "Cartão de Débito",
+                "Cartão de Crédito"
+        };
+
+        ArrayAdapter<String> adapterFormaPagamento =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        formasPagamento
+                );
+
+        adapterFormaPagamento.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        spinnerFormaPagamento.setAdapter(adapterFormaPagamento);
     }
     private void configurarRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -360,6 +385,8 @@ public class MainActivity extends AppCompatActivity {
         String valorTexto = editValorGasto.getText().toString();
         String categoriaSelecionada =
                 spinnerCategoria.getSelectedItem().toString();
+        String formaPagamentoSelecionada =
+                spinnerFormaPagamento.getSelectedItem().toString();
 
         if (descricao.isEmpty() || valorTexto.isEmpty()) {
             Toast.makeText(this,
@@ -372,7 +399,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Cria objeto e adiciona à lista
         Gasto novoGasto =
-                new Gasto(descricao, valorGasto, categoriaSelecionada);
+                new Gasto(descricao,
+                        valorGasto,
+                        categoriaSelecionada,
+                        formaPagamentoSelecionada
+                );
+
+        Toast.makeText(
+                this,
+                "Pagamento: " + formaPagamentoSelecionada,
+                Toast.LENGTH_SHORT
+        ).show();
+
         listaGastos.add(novoGasto);
         adapter.notifyItemInserted(listaGastos.size() - 1);
         salvarListaGastos();
