@@ -27,6 +27,9 @@ import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+
 public class MainActivity extends AppCompatActivity {
 
     // =========================
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         inicializarPreferencias();
         inicializarComponentes();
+        configurarSpinnerCategorias();
         configurarRecyclerView();
         recuperarSalarioSalvo();
         configurarListeners();
@@ -74,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView textSaldoRestante;
     private Button btnSalvar;
     private Button btnAdicionarGasto;
+    private Spinner spinnerCategoria;
+
 
     private void inicializarComponentes() {
         editSalario = findViewById(R.id.editSalario);
@@ -83,9 +89,34 @@ public class MainActivity extends AppCompatActivity {
         textSaldoRestante = findViewById(R.id.textSaldoRestante);
         btnSalvar = findViewById(R.id.btnSalvar);
         btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
+        spinnerCategoria = findViewById(R.id.spinnerCategoria);
         recyclerView = findViewById(R.id.recyclerGastos);
-    }
 
+    }
+    private void configurarSpinnerCategorias() {
+
+        String[] categorias = {
+                "Alimentação",
+                "Transporte",
+                "Moradia",
+                "Saúde",
+                "Lazer",
+                "Outros"
+        };
+
+        ArrayAdapter<String> adapterCategorias =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        categorias
+                );
+
+        adapterCategorias.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        spinnerCategoria.setAdapter(adapterCategorias);
+    }
     private void configurarRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new GastoAdapter(listaGastos);
@@ -327,6 +358,8 @@ public class MainActivity extends AppCompatActivity {
 
         String descricao = editDescricao.getText().toString();
         String valorTexto = editValorGasto.getText().toString();
+        String categoriaSelecionada =
+                spinnerCategoria.getSelectedItem().toString();
 
         if (descricao.isEmpty() || valorTexto.isEmpty()) {
             Toast.makeText(this,
@@ -338,12 +371,17 @@ public class MainActivity extends AppCompatActivity {
         double valorGasto = Double.parseDouble(valorTexto);
 
         // Cria objeto e adiciona à lista
-        Gasto novoGasto = new Gasto(descricao, valorGasto, "Outros");
+        Gasto novoGasto =
+                new Gasto(descricao, valorGasto, categoriaSelecionada);
         listaGastos.add(novoGasto);
         adapter.notifyItemInserted(listaGastos.size() - 1);
         salvarListaGastos();
 
-
+        Toast.makeText(
+                this,
+                "Categoria: " + categoriaSelecionada,
+                Toast.LENGTH_SHORT
+        ).show();
 
         // Atualiza total
         totalGasto += valorGasto;
