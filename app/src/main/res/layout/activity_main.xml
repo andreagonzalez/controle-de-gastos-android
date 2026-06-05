@@ -56,6 +56,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Forma de Pagamento" />
+
+    <Spinner
+        android:id="@+id/spinnerFormaPagamento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/btnAdicionarGasto"
         android:layout_width="match_parent"

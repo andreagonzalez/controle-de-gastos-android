@@ -54,6 +54,16 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
 
         holder.textCategoria.setText("Categoria: " + categoria);
 
+        String formaPagamento = gasto.getFormaPagamento();
+
+        if (formaPagamento == null || formaPagamento.isEmpty()) {
+            formaPagamento = "Não informado";
+        }
+
+        holder.textFormaPagamento.setText(
+                "Pagamento: " + formaPagamento
+        );
+
         holder.textValor.setText(formatarMoeda(gasto.getValor()));
 
         holder.itemView.setOnLongClickListener(v -> {
@@ -85,6 +95,7 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
 
         TextView textDescricao;
         TextView textCategoria;
+        TextView textFormaPagamento;
         TextView textValor;
 
         public GastoViewHolder(@NonNull View itemView) {
@@ -92,6 +103,7 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
 
             textDescricao = itemView.findViewById(R.id.textDescricao);
             textCategoria = itemView.findViewById(R.id.textCategoria);
+            textFormaPagamento = itemView.findViewById(R.id.textFormaPagamento);
             textValor = itemView.findViewById(R.id.textValor);
         }
     }
