@@ -372,7 +372,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Cria objeto e adiciona à lista
         Gasto novoGasto =
-                new Gasto(descricao, valorGasto, categoriaSelecionada);
+                new Gasto(descricao,
+                        valorGasto,
+                        categoriaSelecionada,
+                        "Não informado"
+                );
         listaGastos.add(novoGasto);
         adapter.notifyItemInserted(listaGastos.size() - 1);
         salvarListaGastos();
