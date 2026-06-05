@@ -45,15 +45,26 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
         Gasto gasto = listaGastos.get(position);
 
         holder.textDescricao.setText(gasto.getDescricao());
+
+        String categoria = gasto.getCategoria();
+
+        if (categoria == null || categoria.isEmpty()) {
+            categoria = "Outros";
+        }
+
+        holder.textCategoria.setText("Categoria: " + categoria);
+
         holder.textValor.setText(formatarMoeda(gasto.getValor()));
 
         holder.itemView.setOnLongClickListener(v -> {
             if (longClickListener != null) {
                 int posicaoAtual = holder.getAdapterPosition();
+
                 if (posicaoAtual != RecyclerView.NO_POSITION) {
                     longClickListener.onItemLongClick(posicaoAtual);
                 }
             }
+
             return true;
         });
     }
@@ -66,17 +77,21 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
     private String formatarMoeda(double valor) {
         NumberFormat formatoBrasil =
                 NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+
         return formatoBrasil.format(valor);
     }
 
     public static class GastoViewHolder extends RecyclerView.ViewHolder {
 
         TextView textDescricao;
+        TextView textCategoria;
         TextView textValor;
 
         public GastoViewHolder(@NonNull View itemView) {
             super(itemView);
+
             textDescricao = itemView.findViewById(R.id.textDescricao);
+            textCategoria = itemView.findViewById(R.id.textCategoria);
             textValor = itemView.findViewById(R.id.textValor);
         }
     }
