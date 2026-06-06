@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         listaEntradas.add(entrada);
-
+        salvarListaEntradas();
         Toast.makeText(
                 this,
                 "Entrada adicionada com sucesso",
@@ -78,6 +78,25 @@ public class MainActivity extends AppCompatActivity {
 
         editDescricaoEntrada.setText("");
         editValorEntrada.setText("");
+    }
+    private void recuperarListaEntradas() {
+
+        Gson gson = new Gson();
+
+        String json =
+                preferences.getString("lista_entradas", null);
+
+        if (json != null) {
+
+            Type type =
+                    new TypeToken<ArrayList<Entrada>>() {}.getType();
+
+            listaEntradas.clear();
+
+            listaEntradas.addAll(
+                    gson.fromJson(json, type)
+            );
+        }
     }
 
     // =========================
@@ -98,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         recuperarSalarioSalvo();
         configurarListeners();
         recuperarListaGastos();
+        recuperarListaEntradas();
     }
 
     // =========================
@@ -488,6 +508,15 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("lista_gastos", json);
+        editor.apply();
+    }
+    private void salvarListaEntradas() {
+
+        Gson gson = new Gson();
+        String json = gson.toJson(listaEntradas);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("lista_entradas", json);
         editor.apply();
     }
 
