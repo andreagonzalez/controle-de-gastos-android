@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
+import br.inf.andreagonzalez.controledegastos.model.Entrada;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 
 import android.widget.Spinner;
@@ -41,8 +42,43 @@ public class MainActivity extends AppCompatActivity {
     private double totalGasto = 0;
 
     private ArrayList<Gasto> listaGastos = new ArrayList<>();
+    private ArrayList<Entrada> listaEntradas = new ArrayList<>();
     private RecyclerView recyclerView;
     private GastoAdapter adapter;
+    private void adicionarEntrada() {
+
+        String descricao = editDescricaoEntrada.getText().toString();
+        String valorTexto = editValorEntrada.getText().toString();
+
+        if (descricao.isEmpty() || valorTexto.isEmpty()) {
+
+            Toast.makeText(
+                    this,
+                    "Preencha todos os campos",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        double valor = Double.parseDouble(valorTexto);
+
+        Entrada entrada = new Entrada(
+                descricao,
+                valor
+        );
+
+        listaEntradas.add(entrada);
+
+        Toast.makeText(
+                this,
+                "Entrada adicionada com sucesso",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        editDescricaoEntrada.setText("");
+        editValorEntrada.setText("");
+    }
 
     // =========================
     // CICLO DE VIDA
@@ -81,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btnAdicionarGasto;
     private Spinner spinnerCategoria;
     private Spinner spinnerFormaPagamento;
+    private EditText editDescricaoEntrada;
+    private EditText editValorEntrada;
+    private Button btnAdicionarEntrada;
 
 
     private void inicializarComponentes() {
@@ -94,7 +133,9 @@ public class MainActivity extends AppCompatActivity {
         spinnerCategoria = findViewById(R.id.spinnerCategoria);
         recyclerView = findViewById(R.id.recyclerGastos);
         spinnerFormaPagamento = findViewById(R.id.spinnerFormaPagamento);
-
+        editDescricaoEntrada = findViewById(R.id.editDescricaoEntrada);
+        editValorEntrada = findViewById(R.id.editValorEntrada);
+        btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
     }
     private void configurarSpinnerCategorias() {
 
@@ -342,6 +383,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Botão salvar salário
         btnSalvar.setOnClickListener(v -> salvarSalario());
+
+        btnAdicionarEntrada.setOnClickListener(
+                v -> adicionarEntrada()
+        );
 
         // Botão adicionar gasto
         btnAdicionarGasto.setOnClickListener(v -> adicionarGasto());
