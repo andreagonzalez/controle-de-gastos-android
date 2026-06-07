@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
+import br.inf.andreagonzalez.controledegastos.model.Entrada;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 
 import android.widget.Spinner;
@@ -39,10 +40,73 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
 
     private double totalGasto = 0;
+    private double totalEntrada = 0;
 
     private ArrayList<Gasto> listaGastos = new ArrayList<>();
+    private ArrayList<Entrada> listaEntradas = new ArrayList<>();
     private RecyclerView recyclerView;
     private GastoAdapter adapter;
+    private void adicionarEntrada() {
+
+        String descricao = editDescricaoEntrada.getText().toString();
+        String valorTexto = editValorEntrada.getText().toString();
+
+        if (descricao.isEmpty() || valorTexto.isEmpty()) {
+
+            Toast.makeText(
+                    this,
+                    "Preencha todos os campos",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        double valor = Double.parseDouble(valorTexto);
+
+        Entrada entrada = new Entrada(
+                descricao,
+                valor
+        );
+
+        listaEntradas.add(entrada);
+        totalEntrada += valor;
+        salvarListaEntradas();
+        recalcularSaldo();
+        Toast.makeText(
+                this,
+                "Entrada adicionada com sucesso",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        editDescricaoEntrada.setText("");
+        editValorEntrada.setText("");
+    }
+    private void recuperarListaEntradas() {
+
+        Gson gson = new Gson();
+
+        String json =
+                preferences.getString("lista_entradas", null);
+
+        if (json != null) {
+
+            Type type =
+                    new TypeToken<ArrayList<Entrada>>() {}.getType();
+
+            listaEntradas.clear();
+
+            listaEntradas.addAll(
+                    gson.fromJson(json, type)
+            );
+
+            totalEntrada = 0;
+
+            for (Entrada entrada : listaEntradas) {
+                totalEntrada += entrada.getValor();
+            }
+        }
+    }
 
     // =========================
     // CICLO DE VIDA
@@ -62,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         recuperarSalarioSalvo();
         configurarListeners();
         recuperarListaGastos();
+        recuperarListaEntradas();
     }
 
     // =========================
@@ -81,6 +146,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btnAdicionarGasto;
     private Spinner spinnerCategoria;
     private Spinner spinnerFormaPagamento;
+    private EditText editDescricaoEntrada;
+    private EditText editValorEntrada;
+    private Button btnAdicionarEntrada;
 
 
     private void inicializarComponentes() {
@@ -94,7 +162,9 @@ public class MainActivity extends AppCompatActivity {
         spinnerCategoria = findViewById(R.id.spinnerCategoria);
         recyclerView = findViewById(R.id.recyclerGastos);
         spinnerFormaPagamento = findViewById(R.id.spinnerFormaPagamento);
-
+        editDescricaoEntrada = findViewById(R.id.editDescricaoEntrada);
+        editValorEntrada = findViewById(R.id.editValorEntrada);
+        btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
     }
     private void configurarSpinnerCategorias() {
 
@@ -154,7 +224,20 @@ public class MainActivity extends AppCompatActivity {
                 NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
         return formatoBrasil.format(valor);
     }
+    private void recalcularSaldo() {
 
+        float salarioSalvo =
+                preferences.getFloat("salario", 0);
+
+        double saldo =
+                salarioSalvo + totalEntrada - totalGasto;
+
+        textTotalGasto.setText(
+                "Total gasto: " + formatarMoeda(totalGasto)
+        );
+
+        atualizarSaldo(saldo);
+    }
     private void atualizarSaldo(double saldo) {
 
         textSaldoRestante.setText("Saldo restante: " + formatarMoeda(saldo));
@@ -205,11 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 totalGasto += gasto.getValor();
             }
 
-            float salarioSalvo = preferences.getFloat("salario", 0);
-            double saldo = salarioSalvo - totalGasto;
-
-            textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-            atualizarSaldo(saldo);
+            recalcularSaldo();
         }
     }
     private void editarGasto(int position) {
@@ -245,11 +324,7 @@ public class MainActivity extends AppCompatActivity {
 
                     adapter.notifyItemChanged(position);
 
-                    float salarioSalvo = preferences.getFloat("salario", 0);
-                    double saldo = salarioSalvo - totalGasto;
-
-                    textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-                    atualizarSaldo(saldo);
+                    recalcularSaldo();
 
                     salvarListaGastos();
 
@@ -343,6 +418,10 @@ public class MainActivity extends AppCompatActivity {
         // Botão salvar salário
         btnSalvar.setOnClickListener(v -> salvarSalario());
 
+        btnAdicionarEntrada.setOnClickListener(
+                v -> adicionarEntrada()
+        );
+
         // Botão adicionar gasto
         btnAdicionarGasto.setOnClickListener(v -> adicionarGasto());
     }
@@ -424,11 +503,7 @@ public class MainActivity extends AppCompatActivity {
         // Atualiza total
         totalGasto += valorGasto;
 
-        float salarioSalvo = preferences.getFloat("salario", 0);
-        double saldo = salarioSalvo - totalGasto;
-
-        textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-        atualizarSaldo(saldo);
+        recalcularSaldo();
 
         // Limpa campos
         editDescricao.setText("");
@@ -443,6 +518,15 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("lista_gastos", json);
+        editor.apply();
+    }
+    private void salvarListaEntradas() {
+
+        Gson gson = new Gson();
+        String json = gson.toJson(listaEntradas);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("lista_entradas", json);
         editor.apply();
     }
 
