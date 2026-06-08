@@ -27,9 +27,11 @@ import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
+import br.inf.andreagonzalez.controledegastos.model.Movimento;
 
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Gasto> listaGastos = new ArrayList<>();
     private ArrayList<Entrada> listaEntradas = new ArrayList<>();
+    private ArrayList<Movimento> listaMovimentos = new ArrayList<>();
     private RecyclerView recyclerView;
     private GastoAdapter adapter;
     private void adicionarEntrada() {
@@ -105,6 +108,33 @@ public class MainActivity extends AppCompatActivity {
             for (Entrada entrada : listaEntradas) {
                 totalEntrada += entrada.getValor();
             }
+        }
+    }
+
+    private void consolidarMovimentos() {
+
+        listaMovimentos.clear();
+
+        for (Entrada entrada : listaEntradas) {
+
+            listaMovimentos.add(
+                    new Movimento(
+                            entrada.getDescricao(),
+                            entrada.getValor(),
+                            "ENTRADA"
+                    )
+            );
+        }
+
+        for (Gasto gasto : listaGastos) {
+
+            listaMovimentos.add(
+                    new Movimento(
+                            gasto.getDescricao(),
+                            gasto.getValor(),
+                            "GASTO"
+                    )
+            );
         }
     }
 
