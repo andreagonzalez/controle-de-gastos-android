@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.content.Intent;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,9 +27,14 @@ import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
+import br.inf.andreagonzalez.controledegastos.model.Movimento;
+import br.inf.andreagonzalez.controledegastos.ui.ExtratoActivity;
 
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,8 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Gasto> listaGastos = new ArrayList<>();
     private ArrayList<Entrada> listaEntradas = new ArrayList<>();
+    private ArrayList<Movimento> listaMovimentos = new ArrayList<>();
+
     private RecyclerView recyclerView;
     private GastoAdapter adapter;
+    private Button btnVerExtrato;
     private void adicionarEntrada() {
 
         String descricao = editDescricaoEntrada.getText().toString();
@@ -108,6 +116,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void consolidarMovimentos() {
+
+        listaMovimentos.clear();
+
+        for (Entrada entrada : listaEntradas) {
+
+            listaMovimentos.add(
+                    new Movimento(
+                            entrada.getDescricao(),
+                            entrada.getValor(),
+                            "ENTRADA"
+                    )
+            );
+        }
+
+        for (Gasto gasto : listaGastos) {
+
+            listaMovimentos.add(
+                    new Movimento(
+                            gasto.getDescricao(),
+                            gasto.getValor(),
+                            "GASTO"
+                    )
+            );
+        }
+    }
+
     // =========================
     // CICLO DE VIDA
     // =========================
@@ -165,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         editDescricaoEntrada = findViewById(R.id.editDescricaoEntrada);
         editValorEntrada = findViewById(R.id.editValorEntrada);
         btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
+        btnVerExtrato = findViewById(R.id.btnVerExtrato);
     }
     private void configurarSpinnerCategorias() {
 
@@ -390,11 +426,10 @@ public class MainActivity extends AppCompatActivity {
                 listaGastos.remove(position);
                 adapter.notifyItemRemoved(position);
 
-                float salarioSalvo = preferences.getFloat("salario", 0);
-                double saldo = salarioSalvo - totalGasto;
+                recalcularSaldo();
 
                 textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-                atualizarSaldo(saldo);
+
 
                 salvarListaGastos();
 
@@ -424,6 +459,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Botão adicionar gasto
         btnAdicionarGasto.setOnClickListener(v -> adicionarGasto());
+
+        // Botão ver extrato
+        btnVerExtrato.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    ExtratoActivity.class
+            );
+
+            startActivity(intent);
+        });
     }
 
     // =========================
@@ -484,11 +530,7 @@ public class MainActivity extends AppCompatActivity {
                         formaPagamentoSelecionada
                 );
 
-        Toast.makeText(
-                this,
-                "Pagamento: " + formaPagamentoSelecionada,
-                Toast.LENGTH_SHORT
-        ).show();
+
 
         listaGastos.add(novoGasto);
         adapter.notifyItemInserted(listaGastos.size() - 1);
@@ -496,7 +538,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(
                 this,
-                "Categoria: " + categoriaSelecionada,
+                "Gasto adicionado com sucesso",
                 Toast.LENGTH_SHORT
         ).show();
 

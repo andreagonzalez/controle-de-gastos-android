@@ -99,6 +99,12 @@
         android:layout_height="wrap_content"
         android:text="Adicionar Gasto" />
 
+    <Button
+        android:id="@+id/btnVerExtrato"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver Extrato" />
+
     <TextView
         android:id="@+id/textTotalGasto"
         android:layout_width="wrap_content"
