@@ -30,6 +30,10 @@ import br.inf.andreagonzalez.controledegastos.model.Gasto;
 import br.inf.andreagonzalez.controledegastos.model.Movimento;
 import br.inf.andreagonzalez.controledegastos.ui.ExtratoActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 
@@ -522,12 +526,18 @@ public class MainActivity extends AppCompatActivity {
 
         double valorGasto = Double.parseDouble(valorTexto);
 
+        String data = new SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.getDefault()
+        ).format(new Date());
+
         // Cria objeto e adiciona à lista
         Gasto novoGasto =
                 new Gasto(descricao,
                         valorGasto,
                         categoriaSelecionada,
-                        formaPagamentoSelecionada
+                        formaPagamentoSelecionada,
+                        data
                 );
 
 
