@@ -121,7 +121,8 @@ public class ExtratoActivity extends AppCompatActivity {
                     new Movimento(
                             entrada.getDescricao(),
                             entrada.getValor(),
-                            "ENTRADA"
+                            "ENTRADA",
+                            entrada.getData()
                     )
             );
         }
@@ -132,7 +133,8 @@ public class ExtratoActivity extends AppCompatActivity {
                     new Movimento(
                             gasto.getDescricao(),
                             gasto.getValor(),
-                            "GASTO"
+                            "GASTO",
+                            gasto.getData()
                     )
             );
         }

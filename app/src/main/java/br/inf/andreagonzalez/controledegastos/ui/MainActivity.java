@@ -30,6 +30,10 @@ import br.inf.andreagonzalez.controledegastos.model.Gasto;
 import br.inf.andreagonzalez.controledegastos.model.Movimento;
 import br.inf.andreagonzalez.controledegastos.ui.ExtratoActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 
@@ -71,10 +75,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         double valor = Double.parseDouble(valorTexto);
+        String data = new SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.getDefault()
+        ).format(new Date());
 
         Entrada entrada = new Entrada(
                 descricao,
-                valor
+                valor,
+                data
         );
 
         listaEntradas.add(entrada);
@@ -126,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
                     new Movimento(
                             entrada.getDescricao(),
                             entrada.getValor(),
-                            "ENTRADA"
+                            "ENTRADA",
+                            entrada.getData()
                     )
             );
         }
@@ -137,7 +147,8 @@ public class MainActivity extends AppCompatActivity {
                     new Movimento(
                             gasto.getDescricao(),
                             gasto.getValor(),
-                            "GASTO"
+                            "GASTO",
+                            gasto.getData()
                     )
             );
         }
@@ -522,12 +533,18 @@ public class MainActivity extends AppCompatActivity {
 
         double valorGasto = Double.parseDouble(valorTexto);
 
+        String data = new SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.getDefault()
+        ).format(new Date());
+
         // Cria objeto e adiciona à lista
         Gasto novoGasto =
                 new Gasto(descricao,
                         valorGasto,
                         categoriaSelecionada,
-                        formaPagamentoSelecionada
+                        formaPagamentoSelecionada,
+                        data
                 );
 
 
