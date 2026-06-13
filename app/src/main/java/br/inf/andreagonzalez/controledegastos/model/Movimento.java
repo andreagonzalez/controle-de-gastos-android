@@ -6,14 +6,18 @@ public class Movimento {
     private double valor;
     private String tipo;
 
+    private String data;
+
     public Movimento(
             String descricao,
             double valor,
-            String tipo
+            String tipo,
+            String data
     ) {
         this.descricao = descricao;
         this.valor = valor;
         this.tipo = tipo;
+        this.data = data;
     }
 
     public String getDescricao() {
@@ -26,5 +30,9 @@ public class Movimento {
 
     public String getTipo() {
         return tipo;
+    }
+
+    public String getData() {
+        return data;
     }
 }

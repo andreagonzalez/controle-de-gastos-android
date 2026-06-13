@@ -41,9 +41,13 @@ public class MovimentoAdapter
     public void onBindViewHolder(
             @NonNull MovimentoViewHolder holder,
             int position
+
     ) {
 
         Movimento movimento = listaMovimentos.get(position);
+        holder.textData.setText(
+                movimento.getData()
+        );
 
         holder.textDescricao.setText(movimento.getDescricao());
         holder.textTipo.setText(movimento.getTipo());
@@ -73,10 +77,14 @@ public class MovimentoAdapter
         TextView textDescricao;
         TextView textTipo;
         TextView textValor;
+        TextView textData;
+
 
         public MovimentoViewHolder(@NonNull View itemView) {
 
             super(itemView);
+            textData =
+                    itemView.findViewById(R.id.textDataMovimento);
 
             textDescricao =
                     itemView.findViewById(R.id.textDescricaoMovimento);
