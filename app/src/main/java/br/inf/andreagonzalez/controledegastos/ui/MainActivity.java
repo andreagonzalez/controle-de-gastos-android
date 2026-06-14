@@ -166,9 +166,6 @@ public class MainActivity extends AppCompatActivity {
 
         inicializarPreferencias();
         inicializarComponentes();
-        configurarSpinnerCategorias();
-        configurarSpinnerFormaPagamento();
-        configurarRecyclerView();
         recuperarSalarioSalvo();
         configurarListeners();
         recuperarListaGastos();
@@ -199,34 +196,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void inicializarComponentes() {
         editSalario = findViewById(R.id.editSalario);
-        editDescricao = findViewById(R.id.editDescricao);
-        editValorGasto = findViewById(R.id.editValorGasto);
         textTotalGasto = findViewById(R.id.textTotalGasto);
         textSaldoRestante = findViewById(R.id.textSaldoRestante);
         btnSalvar = findViewById(R.id.btnSalvar);
         btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
-        spinnerCategoria = findViewById(R.id.spinnerCategoria);
-        recyclerView = findViewById(R.id.recyclerGastos);
-        spinnerFormaPagamento = findViewById(R.id.spinnerFormaPagamento);
-        editDescricaoEntrada = findViewById(R.id.editDescricaoEntrada);
-        editValorEntrada = findViewById(R.id.editValorEntrada);
         btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
         btnVerExtrato = findViewById(R.id.btnVerExtrato);
     }
-    private void configurarSpinnerCategorias() {
+  private void configurarSpinnerCategorias() {
 
-        String[] categorias = {
-                "Alimentação",
-                "Transporte",
-                "Moradia",
-                "Saúde",
-                "Lazer",
-                "Outros"
-        };
+            String[] categorias = {
+                    "Alimentação",
+                    "Transporte",
+                    "Moradia",
+                    "Saúde",
+                    "Lazer",
+                    "Outros"
+            };
 
-        ArrayAdapter<String> adapterCategorias =
-                new ArrayAdapter<>(
-                        this,
+            ArrayAdapter<String> adapterCategorias =
+                    new ArrayAdapter<>(
+                            this,
                         android.R.layout.simple_spinner_item,
                         categorias
                 );
@@ -328,7 +318,9 @@ public class MainActivity extends AppCompatActivity {
             listaGastos.clear();
             listaGastos.addAll(gson.fromJson(json, type));
 
-            adapter.notifyDataSetChanged();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
 
             totalGasto = 0;
             for (Gasto gasto : listaGastos) {
@@ -462,14 +454,26 @@ public class MainActivity extends AppCompatActivity {
     private void configurarListeners() {
 
         // Botão salvar salário
-        btnSalvar.setOnClickListener(v -> salvarSalario());
+        btnAdicionarEntrada.setOnClickListener(v -> {
 
-        btnAdicionarEntrada.setOnClickListener(
-                v -> adicionarEntrada()
-        );
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    EntradaActivity.class
+            );
+
+            startActivity(intent);
+        });
 
         // Botão adicionar gasto
-        btnAdicionarGasto.setOnClickListener(v -> adicionarGasto());
+        btnAdicionarGasto.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    GastoActivity.class
+            );
+
+            startActivity(intent);
+        });
 
         // Botão ver extrato
         btnVerExtrato.setOnClickListener(v -> {
