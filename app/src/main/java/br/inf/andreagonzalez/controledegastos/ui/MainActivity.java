@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private GastoAdapter adapter;
     private Button btnVerExtrato;
+    private Button btnVerGastos;
     private void adicionarEntrada() {
 
         String descricao = editDescricaoEntrada.getText().toString();
@@ -202,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
         btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
         btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
         btnVerExtrato = findViewById(R.id.btnVerExtrato);
+        btnVerGastos = findViewById(R.id.btnVerGastos);
     }
   private void configurarSpinnerCategorias() {
 
@@ -481,6 +483,16 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(
                     MainActivity.this,
                     ExtratoActivity.class
+            );
+
+            startActivity(intent);
+        });
+
+        btnVerGastos.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    ListaGastosActivity.class
             );
 
             startActivity(intent);
