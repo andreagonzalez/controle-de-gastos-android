@@ -166,9 +166,6 @@ public class MainActivity extends AppCompatActivity {
 
         inicializarPreferencias();
         inicializarComponentes();
-        configurarSpinnerCategorias();
-        configurarSpinnerFormaPagamento();
-        configurarRecyclerView();
         recuperarSalarioSalvo();
         configurarListeners();
         recuperarListaGastos();
@@ -199,17 +196,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void inicializarComponentes() {
         editSalario = findViewById(R.id.editSalario);
-        editDescricao = findViewById(R.id.editDescricao);
-        editValorGasto = findViewById(R.id.editValorGasto);
         textTotalGasto = findViewById(R.id.textTotalGasto);
         textSaldoRestante = findViewById(R.id.textSaldoRestante);
         btnSalvar = findViewById(R.id.btnSalvar);
         btnAdicionarGasto = findViewById(R.id.btnAdicionarGasto);
-        spinnerCategoria = findViewById(R.id.spinnerCategoria);
-        recyclerView = findViewById(R.id.recyclerGastos);
-        spinnerFormaPagamento = findViewById(R.id.spinnerFormaPagamento);
-        editDescricaoEntrada = findViewById(R.id.editDescricaoEntrada);
-        editValorEntrada = findViewById(R.id.editValorEntrada);
         btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
         btnVerExtrato = findViewById(R.id.btnVerExtrato);
     }
@@ -328,7 +318,9 @@ public class MainActivity extends AppCompatActivity {
             listaGastos.clear();
             listaGastos.addAll(gson.fromJson(json, type));
 
-            adapter.notifyDataSetChanged();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
 
             totalGasto = 0;
             for (Gasto gasto : listaGastos) {
