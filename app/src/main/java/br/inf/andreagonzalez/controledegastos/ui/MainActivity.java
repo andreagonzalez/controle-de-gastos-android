@@ -213,20 +213,20 @@ public class MainActivity extends AppCompatActivity {
         btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
         btnVerExtrato = findViewById(R.id.btnVerExtrato);
     }
-    private void configurarSpinnerCategorias() {
+  private void configurarSpinnerCategorias() {
 
-        String[] categorias = {
-                "Alimentação",
-                "Transporte",
-                "Moradia",
-                "Saúde",
-                "Lazer",
-                "Outros"
-        };
+            String[] categorias = {
+                    "Alimentação",
+                    "Transporte",
+                    "Moradia",
+                    "Saúde",
+                    "Lazer",
+                    "Outros"
+            };
 
-        ArrayAdapter<String> adapterCategorias =
-                new ArrayAdapter<>(
-                        this,
+            ArrayAdapter<String> adapterCategorias =
+                    new ArrayAdapter<>(
+                            this,
                         android.R.layout.simple_spinner_item,
                         categorias
                 );
@@ -473,7 +473,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Botão adicionar gasto
-        btnAdicionarGasto.setOnClickListener(v -> adicionarGasto());
+        btnAdicionarGasto.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    GastoActivity.class
+            );
+
+            startActivity(intent);
+        });
 
         // Botão ver extrato
         btnVerExtrato.setOnClickListener(v -> {

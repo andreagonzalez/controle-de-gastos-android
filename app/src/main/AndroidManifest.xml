@@ -11,6 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ControleDeGastos">
+
+        <activity
+            android:name=".ui.GastoActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.EntradaActivity"
             android:exported="false" />
