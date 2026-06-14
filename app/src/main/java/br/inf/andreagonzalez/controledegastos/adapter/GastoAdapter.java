@@ -63,6 +63,15 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
         holder.textFormaPagamento.setText(
                 "Pagamento: " + formaPagamento
         );
+        String data = gasto.getData();
+
+        if (data == null || data.isEmpty()) {
+            data = "Não informada";
+        }
+
+        holder.textData.setText(
+                "Data: " + data
+        );
 
         holder.textValor.setText(formatarMoeda(gasto.getValor()));
 
@@ -97,6 +106,7 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
         TextView textCategoria;
         TextView textFormaPagamento;
         TextView textValor;
+        TextView textData;
 
         public GastoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,6 +115,7 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
             textCategoria = itemView.findViewById(R.id.textCategoria);
             textFormaPagamento = itemView.findViewById(R.id.textFormaPagamento);
             textValor = itemView.findViewById(R.id.textValor);
+            textData = itemView.findViewById(R.id.textData);
         }
     }
 }

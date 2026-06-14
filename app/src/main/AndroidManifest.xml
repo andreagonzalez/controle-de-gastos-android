@@ -16,6 +16,9 @@
             android:name=".ui.GastoActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.ListaGastosActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.EntradaActivity"
             android:exported="false" />
         <activity
