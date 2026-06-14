@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ControleDeGastos">
         <activity
+            android:name=".ui.EntradaActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.ExtratoActivity"
             android:exported="false" />
         <activity

@@ -462,11 +462,15 @@ public class MainActivity extends AppCompatActivity {
     private void configurarListeners() {
 
         // Botão salvar salário
-        btnSalvar.setOnClickListener(v -> salvarSalario());
+        btnAdicionarEntrada.setOnClickListener(v -> {
 
-        btnAdicionarEntrada.setOnClickListener(
-                v -> adicionarEntrada()
-        );
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    EntradaActivity.class
+            );
+
+            startActivity(intent);
+        });
 
         // Botão adicionar gasto
         btnAdicionarGasto.setOnClickListener(v -> adicionarGasto());
