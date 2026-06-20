@@ -25,7 +25,11 @@
         android:layout_height="wrap_content"
         android:text="Salvar Salário" />
 
-
+    <Button
+        android:id="@+id/btnVerEntradas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver Entradas" />
 
     <Button
         android:id="@+id/btnAdicionarEntrada"

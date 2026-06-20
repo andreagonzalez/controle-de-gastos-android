@@ -19,6 +19,9 @@
             android:name=".ui.ListaGastosActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.ListaEntradasActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.EntradaActivity"
             android:exported="false" />
         <activity

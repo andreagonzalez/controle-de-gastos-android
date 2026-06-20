@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText editDescricaoEntrada;
     private EditText editValorEntrada;
     private Button btnAdicionarEntrada;
-
+    private Button btnVerEntradas;
 
     private void inicializarComponentes() {
         editSalario = findViewById(R.id.editSalario);
@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
         btnVerExtrato = findViewById(R.id.btnVerExtrato);
         btnVerGastos = findViewById(R.id.btnVerGastos);
+        btnVerEntradas = findViewById(R.id.btnVerEntradas);
     }
   private void configurarSpinnerCategorias() {
 
@@ -493,6 +494,15 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(
                     MainActivity.this,
                     ListaGastosActivity.class
+            );
+
+            startActivity(intent);
+        });
+        btnVerEntradas.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    ListaEntradasActivity.class
             );
 
             startActivity(intent);
