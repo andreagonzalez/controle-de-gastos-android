@@ -2,8 +2,14 @@ package br.inf.andreagonzalez.controledegastos.ui;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,7 +17,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
@@ -82,5 +90,110 @@ public class ListaGastosActivity extends AppCompatActivity {
         adapter = new GastoAdapter(listaGastos);
 
         recyclerGastos.setAdapter(adapter);
+
+        adapter.setOnItemLongClickListener(position -> mostrarOpcoesGasto(position));
+    }
+
+    private void mostrarOpcoesGasto(int position) {
+        String[] opcoes = {"Editar", "Excluir"};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Escolha uma ação")
+                .setItems(opcoes, (dialog, which) -> {
+                    if (which == 0) {
+                        editarGasto(position);
+                    }
+                    if (which == 1) {
+                        removerGasto(position);
+                    }
+                })
+                .show();
+    }
+
+    private void editarGasto(int position) {
+        Gasto gastoSelecionado = listaGastos.get(position);
+
+        EditText editDescricaoDialog = new EditText(this);
+        EditText editValorDialog = new EditText(this);
+
+        editDescricaoDialog.setText(gastoSelecionado.getDescricao());
+        editValorDialog.setText(String.valueOf(gastoSelecionado.getValor()));
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(editDescricaoDialog);
+        layout.addView(editValorDialog);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Editar gasto")
+                .setView(layout)
+                .setPositiveButton("Salvar", (dialog, which) -> {
+                    String novaDescricao = editDescricaoDialog.getText().toString();
+                    String valorTexto = editValorDialog.getText().toString();
+                    
+                    if (novaDescricao.isEmpty() || valorTexto.isEmpty()) {
+                        Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    double novoValor = Double.parseDouble(valorTexto);
+                    gastoSelecionado.setDescricao(novaDescricao);
+                    gastoSelecionado.setValor(novoValor);
+                    
+                    adapter.notifyItemChanged(position);
+                    salvarListaGastos();
+                    
+                    Toast.makeText(this, "Gasto atualizado", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void removerGasto(int position) {
+        Gasto gastoSelecionado = listaGastos.get(position);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Remover gasto")
+                .setMessage("Você está prestes a excluir:\n\n"
+                        + gastoSelecionado.getDescricao()
+                        + "\nValor: " + formatarMoeda(gastoSelecionado.getValor())
+                        + "\n\nDeseja continuar?")
+                .setPositiveButton("Remover", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+
+        dialog.setOnShowListener(d -> {
+            Button btnRemover = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button btnCancelar = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+            btnRemover.setTextColor(
+                    ContextCompat.getColor(ListaGastosActivity.this, android.R.color.holo_red_dark)
+            );
+
+            btnRemover.setOnClickListener(v -> {
+                listaGastos.remove(position);
+                adapter.notifyItemRemoved(position);
+                salvarListaGastos();
+                
+                Toast.makeText(this, "Gasto removido com sucesso", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            });
+        });
+
+        dialog.show();
+    }
+
+    private void salvarListaGastos() {
+        Gson gson = new Gson();
+        String json = gson.toJson(listaGastos);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("lista_gastos", json);
+        editor.apply();
+    }
+
+    private String formatarMoeda(double valor) {
+        NumberFormat formatoBrasil = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return formatoBrasil.format(valor);
     }
 }

@@ -18,10 +18,19 @@ import br.inf.andreagonzalez.controledegastos.model.Entrada;
 public class EntradaAdapter
         extends RecyclerView.Adapter<EntradaAdapter.EntradaViewHolder> {
 
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
+    }
+
     private ArrayList<Entrada> listaEntradas;
+    private OnItemLongClickListener longClickListener;
 
     public EntradaAdapter(ArrayList<Entrada> listaEntradas) {
         this.listaEntradas = listaEntradas;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.longClickListener = listener;
     }
 
     @NonNull
@@ -56,6 +65,18 @@ public class EntradaAdapter
         holder.textData.setText(
                 "Data: " + entrada.getData()
         );
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                int posicaoAtual = holder.getAdapterPosition();
+
+                if (posicaoAtual != RecyclerView.NO_POSITION) {
+                    longClickListener.onItemLongClick(posicaoAtual);
+                }
+            }
+
+            return true;
+        });
     }
 
     @Override

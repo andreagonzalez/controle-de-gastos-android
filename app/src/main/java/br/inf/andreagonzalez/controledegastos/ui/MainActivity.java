@@ -10,8 +10,6 @@ import android.widget.Toast;
 import android.content.Intent;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -24,7 +22,6 @@ import java.util.Locale;
 import android.widget.LinearLayout;
 
 import br.inf.andreagonzalez.controledegastos.R;
-import br.inf.andreagonzalez.controledegastos.adapter.GastoAdapter;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 import br.inf.andreagonzalez.controledegastos.model.Movimento;
@@ -55,10 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Entrada> listaEntradas = new ArrayList<>();
     private ArrayList<Movimento> listaMovimentos = new ArrayList<>();
 
-    private RecyclerView recyclerView;
-    private GastoAdapter adapter;
     private Button btnVerExtrato;
     private Button btnVerGastos;
+    private Button btnCalcularSaldoPeriodo;
     private void adicionarEntrada() {
 
         String descricao = editDescricaoEntrada.getText().toString();
@@ -171,6 +167,9 @@ public class MainActivity extends AppCompatActivity {
         configurarListeners();
         recuperarListaGastos();
         recuperarListaEntradas();
+        inicializarPreferencias();
+        recuperarListaEntradas();
+        recuperarListaGastos();
     }
 
     // =========================
@@ -205,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
         btnVerExtrato = findViewById(R.id.btnVerExtrato);
         btnVerGastos = findViewById(R.id.btnVerGastos);
         btnVerEntradas = findViewById(R.id.btnVerEntradas);
+        btnCalcularSaldoPeriodo = findViewById(R.id.btnCalcularSaldoPeriodo);
+
     }
   private void configurarSpinnerCategorias() {
 
@@ -251,13 +252,6 @@ public class MainActivity extends AppCompatActivity {
         );
 
         spinnerFormaPagamento.setAdapter(adapterFormaPagamento);
-    }
-    private void configurarRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new GastoAdapter(listaGastos);
-        recyclerView.setAdapter(adapter);
-
-        adapter.setOnItemLongClickListener(position -> mostrarOpcoesGasto(position));
     }
     private String formatarMoeda(double valor) {
         NumberFormat formatoBrasil =
@@ -321,10 +315,6 @@ public class MainActivity extends AppCompatActivity {
             listaGastos.clear();
             listaGastos.addAll(gson.fromJson(json, type));
 
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
-
             totalGasto = 0;
             for (Gasto gasto : listaGastos) {
                 totalGasto += gasto.getValor();
@@ -333,122 +323,7 @@ public class MainActivity extends AppCompatActivity {
             recalcularSaldo();
         }
     }
-    private void editarGasto(int position) {
 
-        Gasto gastoSelecionado = listaGastos.get(position);
-
-        EditText editDescricaoDialog = new EditText(this);
-        EditText editValorDialog = new EditText(this);
-
-        editDescricaoDialog.setText(gastoSelecionado.getDescricao());
-        editValorDialog.setText(String.valueOf(gastoSelecionado.getValor()));
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        layout.addView(editDescricaoDialog);
-        layout.addView(editValorDialog);
-
-        new AlertDialog.Builder(this)
-                .setTitle("Editar gasto")
-                .setView(layout)
-                .setPositiveButton("Salvar", (dialog, which) -> {
-
-                    String novaDescricao = editDescricaoDialog.getText().toString();
-                    double novoValor = Double.parseDouble(editValorDialog.getText().toString());
-
-                    totalGasto -= gastoSelecionado.getValor();
-
-                    gastoSelecionado.setDescricao(novaDescricao);
-                    gastoSelecionado.setValor(novoValor);
-
-                    totalGasto += novoValor;
-
-                    adapter.notifyItemChanged(position);
-
-                    recalcularSaldo();
-
-                    salvarListaGastos();
-
-                    Toast.makeText(this,
-                            "Gasto atualizado",
-                            Toast.LENGTH_SHORT).show();
-                })
-
-                .setNegativeButton("Cancelar", null)
-                .show();
-    }
-    private void removerGasto(int position) {
-        mostrarOpcoesgasto(position);
-    }
-    private void mostrarOpcoesGasto(int position) {
-
-        String[] opcoes = {"Editar", "Excluir"};
-
-        new AlertDialog.Builder(this)
-                .setTitle("Escolha uma ação")
-                .setItems(opcoes, (dialog, which) -> {
-
-                    if (which == 0) {
-                        editarGasto(position);
-                    }
-
-                    if (which == 1) {
-                        removerGasto(position);
-                    }
-
-                })
-                .show();
-    }
-    private void mostrarOpcoesgasto(int position) {
-
-        Gasto gastoSelecionado = listaGastos.get(position);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Remover gasto")
-                .setMessage("Você está prestes a excluir:\n\n"
-                        + gastoSelecionado.getDescricao()
-                        + "\nValor: " + formatarMoeda(gastoSelecionado.getValor())
-                        + "\n\nDeseja continuar?")
-                .setPositiveButton("Remover", null)
-                .setNegativeButton("Cancelar", null)
-                .create();
-
-        dialog.setOnShowListener(d -> {
-
-            Button btnRemover = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            Button btnCancelar = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-            // Deixa botão remover vermelho
-            btnRemover.setTextColor(
-                    ContextCompat.getColor(MainActivity.this, android.R.color.holo_red_dark)
-            );
-
-            btnRemover.setOnClickListener(v -> {
-
-                totalGasto -= gastoSelecionado.getValor();
-
-                listaGastos.remove(position);
-                adapter.notifyItemRemoved(position);
-
-                recalcularSaldo();
-
-                textTotalGasto.setText("Total gasto: " + formatarMoeda(totalGasto));
-
-
-                salvarListaGastos();
-
-                Toast.makeText(this,
-                        "Gasto removido com sucesso",
-                        Toast.LENGTH_SHORT).show();
-
-                dialog.dismiss();
-            });
-        });
-
-        dialog.show();
-    }
 
     // =========================
     // LISTENERS
@@ -507,6 +382,16 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+        btnCalcularSaldoPeriodo.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    SaldoPeriodoActivity.class
+            );
+
+            startActivity(intent);
+        });
+
     }
 
     // =========================
@@ -576,7 +461,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         listaGastos.add(novoGasto);
-        adapter.notifyItemInserted(listaGastos.size() - 1);
         salvarListaGastos();
 
         Toast.makeText(

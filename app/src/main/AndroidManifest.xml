@@ -25,6 +25,9 @@
             android:name=".ui.EntradaActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.SaldoPeriodoActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.ExtratoActivity"
             android:exported="false" />
         <activity
