@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private GastoAdapter adapter;
     private Button btnVerExtrato;
     private Button btnVerGastos;
+    private Button btnCalcularSaldoPeriodo;
     private void adicionarEntrada() {
 
         String descricao = editDescricaoEntrada.getText().toString();
@@ -171,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
         configurarListeners();
         recuperarListaGastos();
         recuperarListaEntradas();
+        inicializarPreferencias();
+        recuperarListaEntradas();
+        recuperarListaGastos();
     }
 
     // =========================
@@ -205,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
         btnVerExtrato = findViewById(R.id.btnVerExtrato);
         btnVerGastos = findViewById(R.id.btnVerGastos);
         btnVerEntradas = findViewById(R.id.btnVerEntradas);
+        btnCalcularSaldoPeriodo = findViewById(R.id.btnCalcularSaldoPeriodo);
+
     }
   private void configurarSpinnerCategorias() {
 
@@ -507,6 +513,16 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+        btnCalcularSaldoPeriodo.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    SaldoPeriodoActivity.class
+            );
+
+            startActivity(intent);
+        });
+
     }
 
     // =========================
