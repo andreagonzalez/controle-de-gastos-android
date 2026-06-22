@@ -1,0 +1,48 @@
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Arquivos gerados
+diagramas/*.png
+diagramas/*.jpg
+diagramas/*.pdf
+diagramas/*.svg
+
+# Output de ferramentas
+plantuml-output/
+mermaid-output/
+
+# Arquivos de configuração local
+.local-config.*
+.env
+.secrets
+
+# Backups
+*.bak
+*.backup
+
+# IDE/Editor
+.vscode/
+.idea/
+*.iml
+.DS_Store
+
+# Documentação gerada
+_site/
+.build/
+out/
+
+# Logs
+*.log
+logs/
+
+# Cache
+.cache/
+__pycache__/
+
+# Arquivos grandes (diagramas exportados)
+*.drawio
+*.dio
