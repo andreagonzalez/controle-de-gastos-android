@@ -167,14 +167,19 @@ check_consistency() {
 
 # Menu principal
 main() {
-    echo "Selecione uma operação:"
-    echo "  1) Atualizar timestamps apenas"
-    echo "  2) Validar estrutura completa"
-    echo "  3) Executar todas as verificações"
-    echo "  4) Sair"
-    echo -n "Opção: "
-    
-    read -r option
+    # Se receber parâmetro, usar ele
+    if [ $# -eq 1 ]; then
+        option="$1"
+    else
+        echo "Selecione uma operação:"
+        echo "  1) Atualizar timestamps apenas"
+        echo "  2) Validar estrutura completa"
+        echo "  3) Executar todas as verificações"
+        echo "  4) Sair"
+        echo -n "Opção: "
+        
+        read -r option
+    fi
     
     case $option in
         1)
