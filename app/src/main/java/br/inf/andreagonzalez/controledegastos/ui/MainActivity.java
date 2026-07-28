@@ -167,9 +167,14 @@ public class MainActivity extends AppCompatActivity {
         configurarListeners();
         recuperarListaGastos();
         recuperarListaEntradas();
-        inicializarPreferencias();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         recuperarListaEntradas();
         recuperarListaGastos();
+        recalcularSaldo();
     }
 
     // =========================
@@ -332,6 +337,8 @@ public class MainActivity extends AppCompatActivity {
     private void configurarListeners() {
 
         // Botão salvar salário
+        btnSalvar.setOnClickListener(v -> salvarSalario());
+
         btnAdicionarEntrada.setOnClickListener(v -> {
 
             Intent intent = new Intent(
