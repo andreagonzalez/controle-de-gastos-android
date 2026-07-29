@@ -121,7 +121,14 @@ public class SaldoPeriodoActivity extends AppCompatActivity {
             Date dataFim = formato.parse(strFim);
 
             if (dataInicio == null || dataFim == null) return;
-
+            if (dataInicio.after(dataFim)) {
+                Toast.makeText(
+                        this,
+                        "A data inicial não pode ser maior que a data final",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
             double totalEntradas = 0;
             double totalGastos = 0;
 
