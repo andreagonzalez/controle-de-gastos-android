@@ -12,20 +12,18 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
+import br.inf.andreagonzalez.controledegastos.util.DatePickerUtil;
 
 public class EntradaActivity extends AppCompatActivity {
 
     private EditText editDescricaoEntrada;
     private EditText editValorEntrada;
     private Button btnAdicionarEntrada;
-
+    private EditText editData;
     private SharedPreferences preferences;
     private ArrayList<Entrada> listaEntradas = new ArrayList<>();
 
@@ -35,6 +33,10 @@ public class EntradaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_entrada);
 
         inicializarComponentes();
+        DatePickerUtil.configurarCampoData(
+                this,
+                editData
+        );
         inicializarPreferencias();
         recuperarListaEntradas();
 
@@ -50,6 +52,9 @@ public class EntradaActivity extends AppCompatActivity {
 
         editValorEntrada =
                 findViewById(R.id.editValorEntrada);
+
+        editData =
+                findViewById(R.id.editData);
 
         btnAdicionarEntrada =
                 findViewById(R.id.btnAdicionarEntrada);
@@ -85,16 +90,13 @@ public class EntradaActivity extends AppCompatActivity {
         double valor =
                 Double.parseDouble(valorTexto);
 
-        String dataAtual =
-                new SimpleDateFormat(
-                        "dd/MM/yyyy",
-                        Locale.getDefault()
-                ).format(new Date());
+        String data =
+                editData.getText().toString().trim();
 
         Entrada entrada = new Entrada(
                 descricao,
                 valor,
-                dataAtual
+                data
         );
 
         listaEntradas.add(entrada);
