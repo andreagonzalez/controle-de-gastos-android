@@ -22,6 +22,9 @@ import java.util.Locale;
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 
+import android.app.DatePickerDialog;
+
+import java.util.Calendar;
 public class GastoActivity extends AppCompatActivity {
 
     private EditText editDescricao;
@@ -29,7 +32,7 @@ public class GastoActivity extends AppCompatActivity {
     private Spinner spinnerCategoria;
     private Spinner spinnerFormaPagamento;
     private Button btnAdicionarGasto;
-
+    private EditText editData;
     private SharedPreferences preferences;
     private ArrayList<Gasto> listaGastos = new ArrayList<>();
 
@@ -39,10 +42,12 @@ public class GastoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gasto);
 
         inicializarComponentes();
+        configurarCampoData();
         inicializarPreferencias();
         configurarSpinnerCategorias();
         configurarSpinnerFormaPagamento();
         recuperarListaGastos();
+
 
         btnAdicionarGasto.setOnClickListener(
                 v -> adicionarGasto()
@@ -65,6 +70,8 @@ public class GastoActivity extends AppCompatActivity {
 
         btnAdicionarGasto =
                 findViewById(R.id.btnAdicionarGasto);
+        editData =
+                findViewById(R.id.editData);
     }
 
     private void inicializarPreferencias() {
@@ -153,11 +160,7 @@ public class GastoActivity extends AppCompatActivity {
         double valorGasto =
                 Double.parseDouble(valorTexto);
 
-        String data =
-                new SimpleDateFormat(
-                        "dd/MM/yyyy",
-                        Locale.getDefault()
-                ).format(new Date());
+        String data = editData.getText().toString().trim();
 
         Gasto novoGasto =
                 new Gasto(
@@ -180,7 +183,49 @@ public class GastoActivity extends AppCompatActivity {
 
         finish();
     }
+    private void configurarCampoData() {
 
+        Calendar calendar = Calendar.getInstance();
+
+        String dataAtual =
+                String.format(
+                        Locale.getDefault(),
+                        "%02d/%02d/%04d",
+                        calendar.get(Calendar.DAY_OF_MONTH),
+                        calendar.get(Calendar.MONTH) + 1,
+                        calendar.get(Calendar.YEAR)
+                );
+
+        editData.setText(dataAtual);
+
+        editData.setOnClickListener(v -> {
+
+            DatePickerDialog datePickerDialog =
+                    new DatePickerDialog(
+                            this,
+                            (view, year, month, dayOfMonth) -> {
+
+                                String dataSelecionada =
+                                        String.format(
+                                                Locale.getDefault(),
+                                                "%02d/%02d/%04d",
+                                                dayOfMonth,
+                                                month + 1,
+                                                year
+                                        );
+
+                                editData.setText(dataSelecionada);
+
+                            },
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH)
+                    );
+
+            datePickerDialog.show();
+
+        });
+    }
     private void recuperarListaGastos() {
 
         Gson gson = new Gson();
