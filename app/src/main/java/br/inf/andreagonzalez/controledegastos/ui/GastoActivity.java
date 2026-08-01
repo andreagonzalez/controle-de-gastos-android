@@ -1,5 +1,6 @@
 package br.inf.andreagonzalez.controledegastos.ui;
 
+import br.inf.andreagonzalez.controledegastos.util.DatePickerUtil;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -22,9 +23,7 @@ import java.util.Locale;
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 
-import android.app.DatePickerDialog;
 
-import java.util.Calendar;
 public class GastoActivity extends AppCompatActivity {
 
     private EditText editDescricao;
@@ -42,7 +41,11 @@ public class GastoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gasto);
 
         inicializarComponentes();
-        configurarCampoData();
+        DatePickerUtil.configurarCampoData(
+                this,
+                editData
+        );
+
         inicializarPreferencias();
         configurarSpinnerCategorias();
         configurarSpinnerFormaPagamento();
@@ -183,49 +186,8 @@ public class GastoActivity extends AppCompatActivity {
 
         finish();
     }
-    private void configurarCampoData() {
 
-        Calendar calendar = Calendar.getInstance();
 
-        String dataAtual =
-                String.format(
-                        Locale.getDefault(),
-                        "%02d/%02d/%04d",
-                        calendar.get(Calendar.DAY_OF_MONTH),
-                        calendar.get(Calendar.MONTH) + 1,
-                        calendar.get(Calendar.YEAR)
-                );
-
-        editData.setText(dataAtual);
-
-        editData.setOnClickListener(v -> {
-
-            DatePickerDialog datePickerDialog =
-                    new DatePickerDialog(
-                            this,
-                            (view, year, month, dayOfMonth) -> {
-
-                                String dataSelecionada =
-                                        String.format(
-                                                Locale.getDefault(),
-                                                "%02d/%02d/%04d",
-                                                dayOfMonth,
-                                                month + 1,
-                                                year
-                                        );
-
-                                editData.setText(dataSelecionada);
-
-                            },
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
-                            calendar.get(Calendar.DAY_OF_MONTH)
-                    );
-
-            datePickerDialog.show();
-
-        });
-    }
     private void recuperarListaGastos() {
 
         Gson gson = new Gson();
