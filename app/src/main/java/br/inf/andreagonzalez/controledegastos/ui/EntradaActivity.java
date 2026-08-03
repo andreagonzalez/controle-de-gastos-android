@@ -1,6 +1,5 @@
 package br.inf.andreagonzalez.controledegastos.ui;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -8,14 +7,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
 import br.inf.andreagonzalez.controledegastos.R;
+import br.inf.andreagonzalez.controledegastos.model.AppDatabase;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
+import br.inf.andreagonzalez.controledegastos.model.EntradaDao;
 import br.inf.andreagonzalez.controledegastos.util.DatePickerUtil;
 
 public class EntradaActivity extends AppCompatActivity {
@@ -24,8 +19,9 @@ public class EntradaActivity extends AppCompatActivity {
     private EditText editValorEntrada;
     private Button btnAdicionarEntrada;
     private EditText editData;
-    private SharedPreferences preferences;
-    private ArrayList<Entrada> listaEntradas = new ArrayList<>();
+    
+    private AppDatabase db;
+    private EntradaDao entradaDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +33,7 @@ public class EntradaActivity extends AppCompatActivity {
                 this,
                 editData
         );
-        inicializarPreferencias();
-        recuperarListaEntradas();
+        inicializarBanco();
 
         btnAdicionarEntrada.setOnClickListener(
                 v -> adicionarEntrada()
@@ -46,108 +41,37 @@ public class EntradaActivity extends AppCompatActivity {
     }
 
     private void inicializarComponentes() {
-
-        editDescricaoEntrada =
-                findViewById(R.id.editDescricaoEntrada);
-
-        editValorEntrada =
-                findViewById(R.id.editValorEntrada);
-
-        editData =
-                findViewById(R.id.editData);
-
-        btnAdicionarEntrada =
-                findViewById(R.id.btnAdicionarEntrada);
+        editDescricaoEntrada = findViewById(R.id.editDescricaoEntrada);
+        editValorEntrada = findViewById(R.id.editValorEntrada);
+        editData = findViewById(R.id.editData);
+        btnAdicionarEntrada = findViewById(R.id.btnAdicionarEntrada);
     }
 
-    private void inicializarPreferencias() {
-
-        preferences = getSharedPreferences(
-                "dados",
-                MODE_PRIVATE
-        );
+    private void inicializarBanco() {
+        db = AppDatabase.getInstance(this);
+        entradaDao = db.entradaDao();
     }
 
     private void adicionarEntrada() {
+        String descricao = editDescricaoEntrada.getText().toString();
+        String valorTexto = editValorEntrada.getText().toString();
+        String data = editData.getText().toString().trim();
 
-        String descricao =
-                editDescricaoEntrada.getText().toString();
-
-        String valorTexto =
-                editValorEntrada.getText().toString();
-
-        if (descricao.isEmpty() || valorTexto.isEmpty()) {
-
-            Toast.makeText(
-                    this,
-                    "Preencha todos os campos",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+        if (descricao.isEmpty() || valorTexto.isEmpty() || data.isEmpty()) {
+            Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double valor =
-                Double.parseDouble(valorTexto);
+        try {
+            double valor = Double.parseDouble(valorTexto);
 
-        String data =
-                editData.getText().toString().trim();
+            Entrada entrada = new Entrada(descricao, valor, data);
+            entradaDao.inserirEntrada(entrada);
 
-        Entrada entrada = new Entrada(
-                descricao,
-                valor,
-                data
-        );
-
-        listaEntradas.add(entrada);
-
-        salvarListaEntradas();
-
-        Toast.makeText(
-                this,
-                "Entrada adicionada com sucesso",
-                Toast.LENGTH_SHORT
-        ).show();
-
-        finish();
-    }
-
-    private void recuperarListaEntradas() {
-
-        Gson gson = new Gson();
-
-        String json =
-                preferences.getString(
-                        "lista_entradas",
-                        null
-                );
-
-        if (json != null) {
-
-            Type type =
-                    new TypeToken<ArrayList<Entrada>>() {
-                    }.getType();
-
-            listaEntradas =
-                    gson.fromJson(json, type);
+            Toast.makeText(this, "Entrada adicionada com sucesso", Toast.LENGTH_SHORT).show();
+            finish();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Valor inválido", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void salvarListaEntradas() {
-
-        Gson gson = new Gson();
-
-        String json =
-                gson.toJson(listaEntradas);
-
-        SharedPreferences.Editor editor =
-                preferences.edit();
-
-        editor.putString(
-                "lista_entradas",
-                json
-        );
-
-        editor.apply();
     }
 }

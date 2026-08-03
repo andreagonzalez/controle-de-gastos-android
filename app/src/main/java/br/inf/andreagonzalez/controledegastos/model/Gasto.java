@@ -1,6 +1,13 @@
 package br.inf.andreagonzalez.controledegastos.model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "gasto")
 public class Gasto {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
     private String descricao;
     private double valor;
@@ -8,13 +15,12 @@ public class Gasto {
     private String formaPagamento;
     private String data;
 
-
+    // Construtor principal
     public Gasto(String descricao,
                  double valor,
                  String categoria,
                  String formaPagamento,
-                 String data
-    ) {
+                 String data) {
         this.descricao = descricao;
         this.valor = valor;
         this.categoria = categoria;
@@ -22,6 +28,16 @@ public class Gasto {
         this.data = data;
     }
 
+    // Getter e Setter para id
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    // Getters
     public String getDescricao() {
         return descricao;
     }
@@ -33,13 +49,16 @@ public class Gasto {
     public String getCategoria() {
         return categoria;
     }
+
     public String getFormaPagamento() {
         return formaPagamento;
     }
 
-    public String getData(){ return data; }
+    public String getData() {
+        return data;
+    }
 
-
+    // Setters
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
@@ -51,9 +70,12 @@ public class Gasto {
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
+
     public void setFormaPagamento(String formaPagamento) {
         this.formaPagamento = formaPagamento;
     }
-    public void setData(String data){ this.data = data; }
 
+    public void setData(String data) {
+        this.data = data;
+    }
 }
