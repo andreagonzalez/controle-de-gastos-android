@@ -21,6 +21,7 @@ import br.inf.andreagonzalez.controledegastos.adapter.EntradaAdapter;
 import br.inf.andreagonzalez.controledegastos.model.AppDatabase;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
 import br.inf.andreagonzalez.controledegastos.model.EntradaDao;
+import br.inf.andreagonzalez.controledegastos.util.DateCustomUtil;
 
 public class ListaEntradasActivity extends AppCompatActivity {
 
@@ -94,7 +95,7 @@ public class ListaEntradasActivity extends AppCompatActivity {
 
         editDescricaoDialog.setText(entradaSelecionada.getDescricao());
         editValorDialog.setText(String.valueOf(entradaSelecionada.getValor()));
-        editDataDialog.setText(entradaSelecionada.getData());
+        editDataDialog.setText(DateCustomUtil.toDisplayFormat(entradaSelecionada.getData()));
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -118,7 +119,7 @@ public class ListaEntradasActivity extends AppCompatActivity {
                     double novoValor = Double.parseDouble(valorTexto);
                     entradaSelecionada.setDescricao(novaDescricao);
                     entradaSelecionada.setValor(novoValor);
-                    entradaSelecionada.setData(novaData);
+                    entradaSelecionada.setData(DateCustomUtil.toStorageFormat(novaData));
 
                     entradaDao.atualizarEntrada(entradaSelecionada); // ✅ persiste no Room
                     listaEntradas = new ArrayList<>(entradaDao.listarEntradasOrdenadas());

@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
+import br.inf.andreagonzalez.controledegastos.util.DateCustomUtil;
 
 public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHolder> {
 
@@ -70,7 +71,7 @@ public class GastoAdapter extends RecyclerView.Adapter<GastoAdapter.GastoViewHol
         }
 
         holder.textData.setText(
-                "Data: " + data
+                "Data: " + DateCustomUtil.toDisplayFormat(data)
         );
 
         holder.textValor.setText(formatarMoeda(gasto.getValor()));

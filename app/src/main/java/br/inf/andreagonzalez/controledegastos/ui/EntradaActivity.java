@@ -11,6 +11,7 @@ import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.AppDatabase;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
 import br.inf.andreagonzalez.controledegastos.model.EntradaDao;
+import br.inf.andreagonzalez.controledegastos.util.DateCustomUtil;
 import br.inf.andreagonzalez.controledegastos.util.DatePickerUtil;
 
 public class EntradaActivity extends AppCompatActivity {
@@ -64,8 +65,10 @@ public class EntradaActivity extends AppCompatActivity {
 
         try {
             double valor = Double.parseDouble(valorTexto);
+            
+            String dataBanco = DateCustomUtil.toStorageFormat(data);
 
-            Entrada entrada = new Entrada(descricao, valor, data);
+            Entrada entrada = new Entrada(descricao, valor, dataBanco);
             entradaDao.inserirEntrada(entrada);
 
             Toast.makeText(this, "Entrada adicionada com sucesso", Toast.LENGTH_SHORT).show();

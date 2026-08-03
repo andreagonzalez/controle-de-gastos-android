@@ -13,6 +13,7 @@ import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.AppDatabase;
 import br.inf.andreagonzalez.controledegastos.model.Gasto;
 import br.inf.andreagonzalez.controledegastos.model.GastoDao;
+import br.inf.andreagonzalez.controledegastos.util.DateCustomUtil;
 import br.inf.andreagonzalez.controledegastos.util.DatePickerUtil;
 
 public class GastoActivity extends AppCompatActivity {
@@ -83,7 +84,10 @@ public class GastoActivity extends AppCompatActivity {
 
         try {
             double valorGasto = Double.parseDouble(valorTexto);
-            Gasto novoGasto = new Gasto(descricao, valorGasto, categoriaSelecionada, formaPagamentoSelecionada, data);
+            
+            String dataBanco = DateCustomUtil.toStorageFormat(data);
+            
+            Gasto novoGasto = new Gasto(descricao, valorGasto, categoriaSelecionada, formaPagamentoSelecionada, dataBanco);
             gastoDao.inserirGasto(novoGasto);
             Toast.makeText(this, "Gasto adicionado com sucesso", Toast.LENGTH_SHORT).show();
             finish();

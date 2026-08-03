@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
+import br.inf.andreagonzalez.controledegastos.util.DateCustomUtil;
 
 public class EntradaAdapter
         extends RecyclerView.Adapter<EntradaAdapter.EntradaViewHolder> {
@@ -63,7 +64,7 @@ public class EntradaAdapter
         );
 
         holder.textData.setText(
-                "Data: " + entrada.getData()
+                "Data: " + DateCustomUtil.toDisplayFormat(entrada.getData())
         );
 
         holder.itemView.setOnLongClickListener(v -> {

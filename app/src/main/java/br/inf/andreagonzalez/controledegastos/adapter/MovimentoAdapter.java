@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.model.Movimento;
+import br.inf.andreagonzalez.controledegastos.util.DateCustomUtil;
 
 public class MovimentoAdapter
         extends RecyclerView.Adapter<MovimentoAdapter.MovimentoViewHolder> {
@@ -46,7 +47,7 @@ public class MovimentoAdapter
 
         Movimento movimento = listaMovimentos.get(position);
         holder.textData.setText(
-                movimento.getData()
+                DateCustomUtil.toDisplayFormat(movimento.getData())
         );
 
         holder.textDescricao.setText(movimento.getDescricao());
