@@ -1,6 +1,5 @@
 package br.inf.andreagonzalez.controledegastos.ui;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,27 +12,25 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import br.inf.andreagonzalez.controledegastos.R;
 import br.inf.andreagonzalez.controledegastos.adapter.EntradaAdapter;
+import br.inf.andreagonzalez.controledegastos.model.AppDatabase;
 import br.inf.andreagonzalez.controledegastos.model.Entrada;
+import br.inf.andreagonzalez.controledegastos.model.EntradaDao;
+import br.inf.andreagonzalez.controledegastos.util.DateCustomUtil;
 
 public class ListaEntradasActivity extends AppCompatActivity {
 
     private RecyclerView recyclerEntradas;
     private EntradaAdapter adapter;
+    private ArrayList<Entrada> listaEntradas = new ArrayList<>();
 
-    private ArrayList<Entrada> listaEntradas =
-            new ArrayList<>();
-
-    private SharedPreferences preferences;
+    private AppDatabase db;
+    private EntradaDao entradaDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,56 +38,33 @@ public class ListaEntradasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_entradas);
 
         inicializarComponentes();
-        inicializarPreferencias();
+        inicializarBanco();
         recuperarListaEntradas();
         configurarRecyclerView();
     }
 
     private void inicializarComponentes() {
-
-        recyclerEntradas =
-                findViewById(R.id.recyclerEntradas);
+        recyclerEntradas = findViewById(R.id.recyclerEntradas);
     }
 
-    private void inicializarPreferencias() {
-
-        preferences = getSharedPreferences(
-                "dados",
-                MODE_PRIVATE
-        );
+    private void inicializarBanco() {
+        db = AppDatabase.getInstance(this);
+        entradaDao = db.entradaDao();
     }
 
     private void recuperarListaEntradas() {
+        listaEntradas = new ArrayList<>(entradaDao.listarEntradasOrdenadas());
+    }
 
-        Gson gson = new Gson();
-
-        String json =
-                preferences.getString(
-                        "lista_entradas",
-                        null
-                );
-
-        if (json != null) {
-
-            Type type =
-                    new TypeToken<ArrayList<Entrada>>() {
-                    }.getType();
-
-            listaEntradas =
-                    gson.fromJson(json, type);
-        }
+    private void salvarEntrada(Entrada entrada) {
+        entradaDao.inserirEntrada(entrada);
+        listaEntradas = new ArrayList<>(entradaDao.listarEntradasOrdenadas());
+        adapter.notifyDataSetChanged();
     }
 
     private void configurarRecyclerView() {
-
-        recyclerEntradas.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
-
-        adapter = new EntradaAdapter(
-                listaEntradas
-        );
-
+        recyclerEntradas.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new EntradaAdapter(listaEntradas);
         recyclerEntradas.setAdapter(adapter);
 
         adapter.setOnItemLongClickListener(position -> mostrarOpcoesEntrada(position));
@@ -121,7 +95,7 @@ public class ListaEntradasActivity extends AppCompatActivity {
 
         editDescricaoDialog.setText(entradaSelecionada.getDescricao());
         editValorDialog.setText(String.valueOf(entradaSelecionada.getValor()));
-        editDataDialog.setText(entradaSelecionada.getData());
+        editDataDialog.setText(DateCustomUtil.toDisplayFormat(entradaSelecionada.getData()));
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -136,20 +110,21 @@ public class ListaEntradasActivity extends AppCompatActivity {
                     String novaDescricao = editDescricaoDialog.getText().toString();
                     String valorTexto = editValorDialog.getText().toString();
                     String novaData = editDataDialog.getText().toString();
-                    
+
                     if (novaDescricao.isEmpty() || valorTexto.isEmpty() || novaData.isEmpty()) {
                         Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    
+
                     double novoValor = Double.parseDouble(valorTexto);
                     entradaSelecionada.setDescricao(novaDescricao);
                     entradaSelecionada.setValor(novoValor);
-                    entradaSelecionada.setData(novaData);
-                    
-                    adapter.notifyItemChanged(position);
-                    salvarListaEntradas();
-                    
+                    entradaSelecionada.setData(DateCustomUtil.toStorageFormat(novaData));
+
+                    entradaDao.atualizarEntrada(entradaSelecionada); // ✅ persiste no Room
+                    listaEntradas = new ArrayList<>(entradaDao.listarEntradasOrdenadas());
+                    adapter.notifyDataSetChanged();
+
                     Toast.makeText(this, "Entrada atualizada", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancelar", null)
@@ -180,24 +155,16 @@ public class ListaEntradasActivity extends AppCompatActivity {
             );
 
             btnRemover.setOnClickListener(v -> {
+                entradaDao.removerEntrada(entradaSelecionada); // ✅ remove do Room
                 listaEntradas.remove(position);
                 adapter.notifyItemRemoved(position);
-                salvarListaEntradas();
-                
+
                 Toast.makeText(this, "Entrada removida com sucesso", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             });
         });
 
         dialog.show();
-    }
-
-    private void salvarListaEntradas() {
-        Gson gson = new Gson();
-        String json = gson.toJson(listaEntradas);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("lista_entradas", json);
-        editor.apply();
     }
 
     private String formatarMoeda(double valor) {
